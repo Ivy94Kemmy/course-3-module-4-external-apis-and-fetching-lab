@@ -2,9 +2,9 @@
 const weatherApi = "https://api.weather.gov/alerts/active?area="
 
 // Your code here!
-const stateInput = document.getElementById("state");
-const fetchButton = document.getElementById("fetch-weather");
-const weatherAlerts = document.getElementById("weather-alerts");
+const stateInput = document.getElementById("state-input");
+const fetchButton = document.getElementById("fetch-alerts");
+const weatherAlerts = document.getElementById("alerts-display");
 const errorMessage = document.getElementById("error-message");
 
 async function fetchWeatherAlerts(state) {
@@ -13,47 +13,48 @@ async function fetchWeatherAlerts(state) {
             `https://api.weather.gov/alerts/active?area=${state}`
         );
         if (!response.ok) {
-            throw new Error("Unable to fetch weather alerts. Check the state code.");
+            throw new Error("Failed to fetch weather alerts. Check the state code.");
         }
         const data = await response.json();
+        console.log(data);
         displayAlerts(data);
     } catch(error) {
-        weatherAlerts.innerHTML = "";
+        alertsDisplay.innerHTML = "";
         errorMessage.textContent = error.message;
-        errorMessage.hidden = false;
+        errorMessage.classList.remove("hidden");
         console.log(error.message);
     }
 }
 function displayAlerts(data) {
-    weatherAlerts.innerHTML = "";
+    alertsDisplay = "";
     errorMessage.textContent = "";
-    errorMessage.hidden = true;
+    errorMessage.classList.add("hidden"); 
     const summary = document.createElement("h2");
     summary.textContent = `${data.title}: ${data.features.lenghth}`;
     weatherAlerts.appendChild(summary);
     const alertList = document.createElement("ul");
     data.features.forEach((feature) => {
-        const listItem = document.createElement("li");
-        listItem.textContent =
+        const li = document.createElement("li");
+        li.textContent = 
         feature.properties.headline || "No headline available";
-        alertList.appendChild(listItem);
+        alertList.appendChild(li);
     });
-    weatherAlerts.appendChild(alertList);
+    alertList.appendChild(li);
 }
 fetchButton.addEventListener("click", () => {
-    const state = stateInput.ariaValueMax.trim().toUpperCase();
-    weatherAlerts.innerHTML = "";
+    const state = stateInput.value.trim().toUpperCase();
+    alertsDisplay.innerHTML = "";
     errorMessage.textContent = "";
-    errorMessage.hidden = true;
+    errorMessage.classList.add("hidden");
     if (!state) {
         errorMessage.textContent = "Please enter a state abbreviation.";
-        errorMessage.hidden = false;
+        errorMessage.classList.remove("hidden");
         return;
     }
     if (!/^[A-Z]{2}$/.test(state)) {
         errorMessage.textContent =
         "Please enter a valid two-letter state abbreviation.";
-        errorMessage.hidden = false;
+        errorMessage.classList.remove("hidden"); 
         return;
     }
     stateInput.value = "";
